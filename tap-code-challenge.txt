@@ -1,0 +1,24 @@
+Problem:
+
+I have 3 environments where my apps are deployed: DEV, STAGE and PROD
+I have 2 applications using this setup: app1, app2
+In these environments, i keep a list of ips which identifies the list of clients that are allowed to access my apps
+A client can have 1 or more ip addresses
+An ip address can be associated to 1 or more clients
+
+We want a webservice which can provide RESTful endpoints and serve the following functionality:
+- add a client ip (IPv4 only) to the whitelist specific to an environment and app
+- provide the list of ips without duplicates; can filtered by environment, app and/or client name
+- remove a client ip from the list
+
+Code Submission Requirements:
+1. Use java and spring solution.
+2. Add a readme file which includes how to run/use/test your app. if your app is able to host or include a generated 'how to use my web service' it would be cool but not required
+3. Use file as the persistence db
+4. Security for the endpoints is not necessary; You can add one if you want.
+6. Apply REST best practices in terms of endpoint design, proper status xheaders for the operations, correct use of HTTP Verbs, content negotiation and entity representation.
+7. support json and xml as content-type
+
+
+Submit though bitbucket or github; just send us the link to your repo.
+Please send within 1 week upon receipt. 
