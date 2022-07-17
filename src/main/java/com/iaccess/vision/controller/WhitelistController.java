@@ -1,13 +1,14 @@
 package com.iaccess.vision.controller;
 
 import com.iaccess.vision.controller.form.WhitelistForm;
+import com.iaccess.vision.controller.form.WhitelistSearchForm;
 import com.iaccess.vision.service.IWhitelistService;
 import com.iaccess.vision.data.entity.WhitelistEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/whitelists")
@@ -16,13 +17,13 @@ public class WhitelistController {
     @Autowired
     private IWhitelistService whitelistService;
 
-    @GetMapping
-    public List<WhitelistEntity> list(){
-        return whitelistService.list();
+    @PostMapping(value = "search")
+    public Set<String> search(@RequestBody WhitelistSearchForm form){
+        return whitelistService.search(form);
     }
 
     @PostMapping
-    public WhitelistEntity create(@RequestBody @Valid final WhitelistForm form) {
+    public WhitelistEntity create(@RequestBody @Valid WhitelistForm form) {
         return whitelistService.create(form);
     }
 

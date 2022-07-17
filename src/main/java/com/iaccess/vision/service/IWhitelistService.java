@@ -1,13 +1,14 @@
 package com.iaccess.vision.service;
 
 import com.iaccess.vision.controller.form.WhitelistForm;
+import com.iaccess.vision.controller.form.WhitelistSearchForm;
 import com.iaccess.vision.data.entity.WhitelistEntity;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IWhitelistService {
 
-    List<WhitelistEntity> list();
+    Set<String> search(WhitelistSearchForm form);
 
     WhitelistEntity create(WhitelistForm form);
 
