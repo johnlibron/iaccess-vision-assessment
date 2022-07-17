@@ -1,4 +1,4 @@
-package com.iaccess.vision.data;
+package com.iaccess.vision.data.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class Whitelist implements Serializable {
+public class WhitelistEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,17 +24,17 @@ public class Whitelist implements Serializable {
     @Column(name = "ip_address")
     private String ipAddress;
 
-    @Column(name = "app_name")
-    private String appName;
+    @Column(name = "application_name")
+    private String applicationName;
 
-    @Column(name = "env_name")
-    private String envName;
+    @Column(name = "environment_name")
+    private String environmentName;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Whitelist whitelist = (Whitelist) o;
+        WhitelistEntity whitelist = (WhitelistEntity) o;
         return id != null && Objects.equals(id, whitelist.id);
     }
 
