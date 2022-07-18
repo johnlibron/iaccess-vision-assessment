@@ -3,14 +3,15 @@ package com.iaccess.vision.service;
 import com.iaccess.vision.controller.form.WhitelistForm;
 import com.iaccess.vision.controller.form.WhitelistSearchForm;
 import com.iaccess.vision.data.entity.WhitelistEntity;
+import com.iaccess.vision.data.model.ResponseModel;
 
 import java.util.List;
 
 public interface IWhitelistService {
 
-    List<String> search(WhitelistSearchForm form);
+    ResponseModel<List<String>> search(WhitelistSearchForm form);
 
-    WhitelistEntity create(WhitelistForm form) throws Exception;
+    ResponseModel<WhitelistEntity> create(WhitelistForm form) throws Exception;
 
-    void delete(String ipAddress) throws Exception;
+    ResponseModel<Void> delete(String ipAddress) throws Exception;
 }

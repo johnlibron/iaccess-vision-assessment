@@ -18,7 +18,7 @@ public class WhitelistEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "client_name", unique = true, nullable = false)
+    @Column(name = "client_name", nullable = false)
     private String clientName;
 
     @Column(name = "ip_address", nullable = false)

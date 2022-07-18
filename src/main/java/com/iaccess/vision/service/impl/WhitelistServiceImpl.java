@@ -3,6 +3,7 @@ package com.iaccess.vision.service.impl;
 import com.iaccess.vision.controller.form.WhitelistForm;
 import com.iaccess.vision.controller.form.WhitelistSearchForm;
 import com.iaccess.vision.data.mapper.WhitelistMapper;
+import com.iaccess.vision.data.model.ResponseModel;
 import com.iaccess.vision.service.IWhitelistService;
 import com.iaccess.vision.data.entity.WhitelistEntity;
 import com.iaccess.vision.data.repository.WhitelistRepository;
@@ -10,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,7 +28,7 @@ public class WhitelistServiceImpl implements IWhitelistService {
     private WhitelistRepository whitelistRepository;
 
     @Override
-    public List<String> search(WhitelistSearchForm form) {
+    public ResponseModel<List<String>> search(WhitelistSearchForm form) {
         String clientName = null;
         String appName = null;
         String envName = null;
@@ -40,28 +42,33 @@ public class WhitelistServiceImpl implements IWhitelistService {
         if (form.getEnvironmentName() != null) {
             envName = form.getEnvironmentName().name();
         }
+        List<String> list = whitelistMapper.searchIpAddress(clientName, appName, envName);
 
-        return whitelistMapper.searchIpAddress(clientName, appName, envName);
+        if (list.isEmpty()) {
+            return new ResponseModel<>(list, HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseModel<>(list, HttpStatus.OK);
     }
 
     @Override
     @Transactional
-    public WhitelistEntity create(WhitelistForm form) throws Exception {
+    public ResponseModel<WhitelistEntity> create(WhitelistForm form) {
         WhitelistEntity entity = new WhitelistEntity();
         BeanUtils.copyProperties(form, entity);
         entity.setApplicationName(form.getApplicationName().name());
         entity.setEnvironmentName(form.getEnvironmentName().name());
         boolean isExists = whitelistRepository.exists(Example.of(entity));
         if (isExists) {
-            throw new Exception("Whitelist is already existed - " + form);
+            return new ResponseModel<>("Whitelist is already existed - " + form, HttpStatus.CONFLICT);
         } else {
-            return whitelistRepository.save(entity);
+            return new ResponseModel<>(whitelistRepository.save(entity), HttpStatus.CREATED);
         }
     }
 
     @Override
     @Transactional
-    public void delete(String ipAddress) throws Exception {
+    public ResponseModel<Void> delete(String ipAddress) {
         WhitelistEntity entity = new WhitelistEntity();
         entity.setIpAddress(ipAddress);
         ExampleMatcher customExampleMatcher = ExampleMatcher.matching()
@@ -69,8 +76,9 @@ public class WhitelistServiceImpl implements IWhitelistService {
         Example<WhitelistEntity> example = Example.of(entity, customExampleMatcher);
         Optional<WhitelistEntity> optional = whitelistRepository.findOne(example);
         if (optional.isEmpty()) {
-            throw new Exception("IP Address not found - " + ipAddress);
+            return new ResponseModel<>("IP Address not found - " + ipAddress, HttpStatus.NOT_FOUND);
         }
         whitelistRepository.deleteById(optional.get().getId());
+        return new ResponseModel<>(HttpStatus.NO_CONTENT);
     }
 }
