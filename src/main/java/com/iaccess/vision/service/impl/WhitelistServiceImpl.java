@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class WhitelistServiceImpl implements IWhitelistService {
@@ -74,11 +73,11 @@ public class WhitelistServiceImpl implements IWhitelistService {
         ExampleMatcher customExampleMatcher = ExampleMatcher.matching()
                 .withMatcher("ipAddress", ExampleMatcher.GenericPropertyMatchers.exact());
         Example<WhitelistEntity> example = Example.of(entity, customExampleMatcher);
-        Optional<WhitelistEntity> optional = whitelistRepository.findOne(example);
-        if (optional.isEmpty()) {
+        List<WhitelistEntity> list = whitelistRepository.findAll(example);
+        if (list.isEmpty()) {
             return new ResponseModel<>("IP Address not found - " + ipAddress, HttpStatus.NOT_FOUND);
         }
-        whitelistRepository.deleteById(optional.get().getId());
+        whitelistRepository.deleteAll(list);
         return new ResponseModel<>(HttpStatus.NO_CONTENT);
     }
 }
