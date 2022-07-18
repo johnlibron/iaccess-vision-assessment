@@ -9,7 +9,7 @@
 - Run ```RestApiApplication.main```
 - Access the Swagger API through ```http://localhost:8080/swagger-ui/index.html```
 
-## Requirements
+## Overview
 
 - 3 environments where my apps are deployed: ```DEV, STAGE and PROD```
 - 2 applications using this setup: ```app1, app2```
@@ -17,7 +17,7 @@
 - Client can have 1 or more ip addresses
 - IP address can be associated to 1 or more clients
 
-## How to use my web service
+## RESTful endpoints
 
 - Add a client ip (IPv4 only) to the whitelist specific to an environment and app
 ```
@@ -63,3 +63,9 @@ DELETE http://localhost:8080/whitelists/{ip_address}
 - MySQL
 - Apache Tomcat
 - Apache Maven
+
+## Nice to have
+
+- Add unit test cases
+- Add Spring Secrutiy
+- Deploy the application to Heroku
