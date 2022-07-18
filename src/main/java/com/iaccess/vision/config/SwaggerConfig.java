@@ -10,10 +10,17 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 @EnableWebMvc
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
+
+    private static final Set<String> DEFAULT_PRODUCES_CONSUMES =
+            new HashSet<>(Arrays.asList("application/json", "application/xml"));
 
     @Bean
     public Docket api() {
@@ -21,6 +28,8 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.iaccess.vision.controller"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .produces(DEFAULT_PRODUCES_CONSUMES)
+                .consumes(DEFAULT_PRODUCES_CONSUMES);
     }
 }
