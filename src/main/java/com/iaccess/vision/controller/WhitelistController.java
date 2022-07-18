@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/whitelists")
@@ -18,17 +18,17 @@ public class WhitelistController {
     private IWhitelistService whitelistService;
 
     @PostMapping(value = "search")
-    public Set<String> search(@RequestBody WhitelistSearchForm form){
+    public List<String> search(@RequestBody WhitelistSearchForm form){
         return whitelistService.search(form);
     }
 
     @PostMapping
-    public WhitelistEntity create(@RequestBody @Valid WhitelistForm form) {
+    public WhitelistEntity create(@RequestBody @Valid WhitelistForm form) throws Exception {
         return whitelistService.create(form);
     }
 
-    @DeleteMapping(value = "{id}")
-    public void delete(@PathVariable("id") Long id) {
-        whitelistService.delete(id);
+    @DeleteMapping(value = "{ip_address}")
+    public void delete(@PathVariable("ip_address") String ipAddress) throws Exception {
+        whitelistService.delete(ipAddress);
     }
 }

@@ -6,6 +6,7 @@ import com.iaccess.vision.utility.Utility;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -18,9 +19,9 @@ public class WhitelistForm {
     @Pattern(regexp= Utility.IPV4_PATTERN)
     private String ipAddress;
 
-    @NotEmpty
+    @NotNull
     private ApplicationEnum applicationName;
 
-    @NotEmpty
+    @NotNull
     private EnvironmentEnum environmentName;
 }

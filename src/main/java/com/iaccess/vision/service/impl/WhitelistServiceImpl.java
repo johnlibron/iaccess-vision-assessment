@@ -2,66 +2,75 @@ package com.iaccess.vision.service.impl;
 
 import com.iaccess.vision.controller.form.WhitelistForm;
 import com.iaccess.vision.controller.form.WhitelistSearchForm;
-import com.iaccess.vision.data.enumerate.ApplicationEnum;
-import com.iaccess.vision.data.enumerate.EnvironmentEnum;
+import com.iaccess.vision.data.mapper.WhitelistMapper;
 import com.iaccess.vision.service.IWhitelistService;
 import com.iaccess.vision.data.entity.WhitelistEntity;
 import com.iaccess.vision.data.repository.WhitelistRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class WhitelistServiceImpl implements IWhitelistService {
 
     @Autowired
+    private WhitelistMapper whitelistMapper;
+
+    @Autowired
     private WhitelistRepository whitelistRepository;
 
     @Override
-    public Set<String> search(WhitelistSearchForm form) {
-        String clientName = form.getClientName();
-        Enum<ApplicationEnum> appName = form.getApplicationName();
-        Enum<EnvironmentEnum> envName = form.getEnvironmentName();
+    public List<String> search(WhitelistSearchForm form) {
+        String clientName = null;
+        String appName = null;
+        String envName = null;
 
-        Stream<WhitelistEntity> stream = whitelistRepository.findAll().stream();
-
-        if (clientName != null && !clientName.trim().isEmpty()) {
-            stream = stream.filter(e -> e.getClientName().contains(clientName.trim()));
+        if (form.getClientName() != null && !form.getClientName().trim().isEmpty()) {
+            clientName = form.getClientName().trim();
         }
-        if (appName != null) {
-            stream = stream.filter(e -> e.getApplicationName().equals(appName.name()));
+        if (form.getApplicationName() != null) {
+            appName = form.getApplicationName().name();
         }
-        if (envName != null) {
-            stream = stream.filter(e -> e.getEnvironmentName().equals(envName.name()));
+        if (form.getEnvironmentName() != null) {
+            envName = form.getEnvironmentName().name();
         }
 
-        return stream.map(WhitelistEntity::getIpAddress).collect(Collectors.toSet());
+        return whitelistMapper.searchIpAddress(clientName, appName, envName);
     }
 
     @Override
     @Transactional
-    public WhitelistEntity create(WhitelistForm form) {
+    public WhitelistEntity create(WhitelistForm form) throws Exception {
         WhitelistEntity entity = new WhitelistEntity();
         BeanUtils.copyProperties(form, entity);
         entity.setApplicationName(form.getApplicationName().name());
         entity.setEnvironmentName(form.getEnvironmentName().name());
-        return whitelistRepository.save(entity);
+        boolean isExists = whitelistRepository.exists(Example.of(entity));
+        if (isExists) {
+            throw new Exception("Whitelist is already existed - " + form);
+        } else {
+            return whitelistRepository.save(entity);
+        }
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
-        final Optional<WhitelistEntity> optional = whitelistRepository.findById(id);
+    public void delete(String ipAddress) throws Exception {
+        WhitelistEntity entity = new WhitelistEntity();
+        entity.setIpAddress(ipAddress);
+        ExampleMatcher customExampleMatcher = ExampleMatcher.matching()
+                .withMatcher("ipAddress", ExampleMatcher.GenericPropertyMatchers.exact());
+        Example<WhitelistEntity> example = Example.of(entity, customExampleMatcher);
+        Optional<WhitelistEntity> optional = whitelistRepository.findOne(example);
         if (optional.isEmpty()) {
-            throw new EntityNotFoundException(String.valueOf(id));
+            throw new Exception("IP Address not found - " + ipAddress);
         }
-        whitelistRepository.deleteById(id);
+        whitelistRepository.deleteById(optional.get().getId());
     }
 }

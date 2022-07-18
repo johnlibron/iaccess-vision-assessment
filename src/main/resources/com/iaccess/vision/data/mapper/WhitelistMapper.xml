@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iaccess.vision.data.mapper.WhitelistMapper">
+
+    <!-- searchIpAddress -->
+    <select id="searchIpAddress" resultType="String">
+        <![CDATA[
+        SELECT DISTINCT
+            IP_ADDRESS
+        FROM TB_WHITELIST
+        WHERE 1 = 1
+        ]]>
+        <if test="clientName != null">
+            <bind name="clientNameLikePattern" value="'%' + clientName + '%'" />
+            <![CDATA[
+            AND CLIENT_NAME LIKE #{clientNameLikePattern}
+            ]]>
+        </if>
+        <if test="appName != null">
+            <![CDATA[
+            AND APPLICATION_NAME = #{appName}
+            ]]>
+        </if>
+        <if test="envName != null">
+            <![CDATA[
+            AND ENVIRONMENT_NAME = #{envName}
+            ]]>
+        </if>
+    </select>
+</mapper>
